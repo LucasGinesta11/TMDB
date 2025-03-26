@@ -7,6 +7,12 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Dao que contiene las siguientes contultas
+ * - Obtiene todas las peliculas agregadas a favoritos
+ * - Inserta una pelicula a favoritos
+ * - Elimina una pelicula de favoritos
+ */
 @Dao
 interface MovieDao {
 
@@ -21,5 +27,6 @@ interface MovieDao {
     //Elimina una pelicula de favoritos
     @Delete
     suspend fun deleteFavorite(movie: MovieEntity)
+
 
 }

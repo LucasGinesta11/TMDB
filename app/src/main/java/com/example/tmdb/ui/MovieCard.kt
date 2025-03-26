@@ -30,35 +30,35 @@ import com.example.tmdb.model.Item
 import com.example.tmdb.room.MovieEntity
 import com.example.tmdb.viewModel.MovieViewModel
 
+/**
+ * Composable que maneja la lista de cards para cada pelicula
+ *
+ * @param item Parametro que obtiene los atributos de Item
+ * @param navController Manejo de la navegacion
+ * @param movieViewModel Llamada al ViewModel
+ */
 @Composable
-fun MovieCard(favoriteMovie: MovieEntity, navController: NavController, movieViewModel: MovieViewModel) {
-    val imageUrl = "https://image.tmdb.org/t/p/w500${favoriteMovie.posterPath}"
+fun MovieCard(item: Item, navController: NavController, movieViewModel: MovieViewModel) {
+    //Portada de pelicula
+    val imageUrl = "https://image.tmdb.org/t/p/w500${item.poster_path}"
+    //Comprueba el conjunto de peliculas agregadas a favoritos
     val favorites by movieViewModel.favoriteMovies.collectAsState(initial = emptyList())
-    val isFavorite = favorites.any { it.id == favoriteMovie.id }
+    //Comprueba si la pelicula esta agregada a favoritos
+    val isFavorite = favorites.any { it.id == item.id }
 
+    /**
+     * Card con el conjunto de propiedades y atributos de item
+     */
     Card(
         modifier = Modifier
             .height(350.dp)
             .clickable {
-                movieViewModel.setSelectedMovie(Item(
-                    id = favoriteMovie.id,
-                    title = favoriteMovie.title,
-                    poster_path = favoriteMovie.posterPath,
-                    release_date = favoriteMovie.releaseDate,
-                    backdrop_path = "", // Si no necesitas este campo, puedes omitirlo
-                    overview = "", // Si no necesitas este campo, puedes omitirlo
-                    adult = false, // O el valor que necesites
-                    vote_average = 0.0, // O el valor que necesites
-                    original_language = "", // O el valor que necesites
-                    popularity = 0.0 // O el valor que necesites
-                ))
-                navController.navigate("MovieDetails/${favoriteMovie.id}")
+                movieViewModel.setSelectedMovie(item)
+                navController.navigate("MovieDetails/${item.id}")
             },
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Column(
-            modifier = Modifier.padding(10.dp)
-        ) {
+        Column(modifier = Modifier.padding(10.dp)) {
             Surface(shape = RoundedCornerShape(8.dp)) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -68,18 +68,7 @@ fun MovieCard(favoriteMovie: MovieEntity, navController: NavController, movieVie
                     contentDescription = "Portada de la película"
                 )
                 IconButton(onClick = {
-                    movieViewModel.toggleFavorite(Item(
-                        id = favoriteMovie.id,
-                        title = favoriteMovie.title,
-                        poster_path = favoriteMovie.posterPath,
-                        release_date = favoriteMovie.releaseDate,
-                        backdrop_path = "", // Si no necesitas este campo, puedes omitirlo
-                        overview = "", // Si no necesitas este campo, puedes omitirlo
-                        adult = false, // O el valor que necesites
-                        vote_average = 0.0, // O el valor que necesites
-                        original_language = "", // O el valor que necesites
-                        popularity = 0.0 // O el valor que necesites
-                    ))
+                    movieViewModel.toggleFavorite(item)
                 }) {
                     Icon(
                         Icons.Filled.Favorite,
@@ -91,11 +80,30 @@ fun MovieCard(favoriteMovie: MovieEntity, navController: NavController, movieVie
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(text = "Titulo: ${favoriteMovie.title}", color = Color.Blue, fontWeight = FontWeight.Bold)
+            Text(
+                text = "Título: ${item.title}",
+                color = Color.Blue,
+                fontWeight = FontWeight.Bold
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(text = favoriteMovie.releaseDate, color = Color.Blue)
+            Text(text = item.release_date, color = Color.Blue)
         }
     }
+}
+
+fun MovieEntity.toItem(): Item {
+    return Item(
+        id = this.id,
+        title = this.title,
+        poster_path = this.poster_path,
+        release_date = this.release_date,
+        backdrop_path = this.backdrop_path,
+        overview = this.overview,
+        adult = this.adult,
+        vote_average = this.vote_average,
+        original_language = this.original_language,
+        popularity = this.popularity
+    )
 }
